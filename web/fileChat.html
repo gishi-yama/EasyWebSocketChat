@@ -4,36 +4,43 @@
     <meta charset="UTF-8">
     <script>
       window.onload = function () {
-        var dropZone = document.getElementById("drop_zone");
+        var dropZone = document.getElementById('drop_zone');
         dropZone.addEventListener('dragover', handleDragOver, false);
         dropZone.addEventListener('drop', handleFileSelect, false);
-      }
+      };
 
-      var host = location.origin.replace(/^http/, "ws");
-      var context = window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2));
-      var url = host + context + "/Chat";
-//      var url = ws://example.com/hoge
+      var host = location.origin.replace(/^http/, 'ws');
+      var context = window.location.pathname.substring(0, window.location.pathname.indexOf('/', 2));
+      var url = host + context + '/Chat';
+//      var url = ws://example.com/hoge;
       var ws = new WebSocket(url);
-      var iam = "Taro";
+      var iam = 'Taro';
 
       ws.onopen = function () {
-        ws.send(iam + " が接続しました");
+        ws.send(iam + ' が接続しました');
       };
 
       ws.onmessage = function (message) {
-        var tag = document.createElement("div");
-        var message = document.createTextNode(message.data);
-        tag.appendChild(message);
-        document.getElementById("logs").appendChild(tag);
+        var tag = null;
+        if (typeof message.data === "string") {
+          tag = document.createElement('div');
+          tag.appendChild(document.createTextNode(message.data));
+        } else {
+          tag = new Image();
+          tag.src = URL.createObjectURL(message.data);
+        }
+        if (tag) {
+          document.getElementById('logs').appendChild(tag);
+        }
       };
 
       function postToServer() {
-        ws.send(iam + "：" + document.getElementById("msg").value);
-        document.getElementById("msg").value = "";
+        ws.send(iam + '：' + document.getElementById('msg').value);
+        document.getElementById('msg').value = '';
       }
 
       function closeConnect() {
-        ws.send(iam + " が切断しました");
+        ws.send(iam + ' が切断しました');
         ws.close();
       }
 
@@ -46,11 +53,16 @@
         // files is a FileList of File objects. List some properties.
         var output = [];
         for (var i = 0, f; f = files[i]; i++) {
-          output.push('<strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
-                  f.size, ' bytes, last modified: ',
-                  f.lastModifiedDate.toLocaleDateString());
+//          output.push('<strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+//                  f.size, ' bytes, last modified: ',
+//                  f.lastModifiedDate.toLocaleDateString());
+          if (f.type.match(/(jpe*g|png)$/i)) {
+            ws.send(f);
+          } else {
+            alert('画像ファイル（jpg, png）のみ送信できます');
+          }
         }
-        var tag = document.createElement("div");
+        var tag = document.createElement('div');
         tag.innerHTML = output.join('');
         document.getElementById('logs').appendChild(tag);
       }

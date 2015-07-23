@@ -3,43 +3,43 @@
   <head>
     <meta charset="UTF-8">
     <script>
-      var host = location.origin.replace(/^http/, "ws");
-      var context = window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2));
-      var url = host + context + "/Chat";
+      var host = location.origin.replace(/^http/, 'ws');
+      var context = window.location.pathname.substring(0, window.location.pathname.indexOf('/', 2));
+      var url = host + context + '/Chat';
 //      var url = ws://example.com/hoge
       var ws = new WebSocket(url);
-      var iam = "Taro";
+      var iam = 'Taro';
 
       ws.onopen = function () {
-        ws.send(iam + " が接続しました");
+        ws.send(iam + ' が接続しました');
       };
 
       ws.onmessage = function (message) {
-        var tag = document.createElement("div");
+        var tag = document.createElement('div');
         var body = document.createTextNode(message.data);
         tag.appendChild(body);
-        document.getElementById("logs").appendChild(tag);
+        document.getElementById('logs').appendChild(tag);
       };
 
       function postToServer() {
-        ws.send(iam + "：" + document.getElementById("msg").value);
-        document.getElementById("msg").value = "";
+        ws.send(iam + '：' + document.getElementById('msg').value);
+        document.getElementById('msg').value = '';
       }
 
       function closeConnect() {
-        ws.send(iam + " が切断しました");
+        ws.send(iam + ' が切断しました');
         ws.close();
       }
     </script>
   </head>
   <body>
     <div>
-      <div><input id="msg" type="text" placeholder="メッセージ" style = "width: 600px;"/></div>
+      <div><input id='msg' type='text' placeholder='メッセージ' style = 'width: 600px;'/></div>
       <div>
-        <button type="button" onClick="postToServer()">話す</button>
-        <button type="button" onClick="closeConnect()">終了</button>
+        <button type='button' onClick='postToServer()'>話す</button>
+        <button type='button' onClick='closeConnect()'>終了</button>
       </div>
     </div>
-    <div id="logs"></div>
+    <div id='logs'></div>
   </body>
 </html>

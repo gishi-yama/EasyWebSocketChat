@@ -64,18 +64,18 @@
   </head>
   <body>
     <div>
-      <div>内容：<textarea id="msg"></textarea></div>
+      <div><input id="msg" type="text" placeholder="メッセージ" style = "width: 600px;"/></div>
       <div id="drop_zone" style="
            width: 600px;
-           height: 200px;
-           border: gray thin solid;
+           height: 100px;
+           border: lightgray thin dashed;
            display: table-cell;
            text-align: center;
            vertical-align: middle;">
         スタンプ</div>
       <div>
-        <button type="submit" onClick="postToServer()">話す</button>
-        <button type="submit" onClick="closeConnect()">終了</button>
+        <button type="button" onClick="postToServer()">話す</button>
+        <button type="button" onClick="closeConnect()">終了</button>
       </div>
     </div>
     <div id="logs"></div>

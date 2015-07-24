@@ -2,44 +2,51 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <style>
+      input {
+        width : 400px;
+        padding: 1.1em;
+      }
+      button {
+        padding: 1.1em;
+      }
+      p {
+        border: lightgray thin solid;
+        padding: 1em;
+      }
+    </style>
     <script>
+      var iam = 'Taro';
       var host = location.origin.replace(/^http/, 'ws');
       var context = window.location.pathname.substring(0, window.location.pathname.indexOf('/', 2));
-      var url = host + context + '/Chat';
-//      var url = ws://example.com/hoge
+      //      var url = ws://example.com/hoge;
+      var url = host + context + '/Chat/' + iam;
       var ws = new WebSocket(url);
-      var iam = 'Taro';
-
-      ws.onopen = function () {
-        ws.send(iam + ' が接続しました');
-      };
 
       ws.onmessage = function (message) {
-        var tag = document.createElement('div');
-        var body = document.createTextNode(message.data);
-        tag.appendChild(body);
+        var tag = document.createElement('p');
+        tag.appendChild(document.createTextNode(message.data));
         document.getElementById('logs').appendChild(tag);
       };
 
-      function postToServer() {
-        ws.send(iam + '：' + document.getElementById('msg').value);
-        document.getElementById('msg').value = '';
-      }
-
-      function closeConnect() {
-        ws.send(iam + ' が切断しました');
-        ws.close();
+      function talk() {
+        var msg = document.getElementById('msg').value;
+        if (msg) {
+          if (msg.match(/.*：.*/)) {
+            alert('：が入る文字列は送信できません');
+          } else {
+            ws.send(msg);
+            document.getElementById('msg').value = '';
+          }
+        }
       }
     </script>
   </head>
   <body>
+    <div id="logs"></div>
     <div>
-      <div><input id='msg' type='text' placeholder='メッセージ' style = 'width: 600px;'/></div>
-      <div>
-        <button type='button' onClick='postToServer()'>話す</button>
-        <button type='button' onClick='closeConnect()'>終了</button>
-      </div>
+      <input id="msg" type="text" placeholder="メッセージ" />
+      <button type="submit" value="talk" onClick="talk()">話す</button>
     </div>
-    <div id='logs'></div>
   </body>
 </html>

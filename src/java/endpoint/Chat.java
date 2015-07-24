@@ -1,29 +1,33 @@
 package endpoint;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.stream.Stream;
+import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint("/Chat")
+@ServerEndpoint("/Chat/{who}")
 public class Chat {
 
-  @OnMessage
-  public void onMessage(String message, Session onSession) {
-    onSession.getOpenSessions()
-            .stream()
-            .forEach(s -> s.getAsyncRemote().sendText(message));
+  @OnOpen
+  public void onMessage(@PathParam("who") String who, Session session) {
+    push(who + "が接続しました", session);
   }
 
   @OnMessage
-  public void processUpload(ByteBuffer bytes, boolean last, Session onSession) {
-    System.out.println("Binary");
-//    onMessage(Base64.encode(bytes.array()), onSession);
-    onSession.getOpenSessions()
+  public void onMessage(@PathParam("who") String who, String message, Session session) {
+    push(who + "：" + message, session);
+  }
+
+  @OnClose
+  public void onClose(@PathParam("who") String who, Session session) {
+    push(who + "が切断しました", session);
+  }
+
+  public void push(String message, Session session) {
+    session.getOpenSessions()
             .stream()
-            .forEach(s -> s.getAsyncRemote().sendBinary(bytes));
+            .forEach(s -> s.getAsyncRemote().sendText(message));
   }
 }

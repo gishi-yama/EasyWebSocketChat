@@ -26,63 +26,48 @@
     <script>
       window.onload = function () {
         var dropZone = document.getElementById('drop_zone');
-        dropZone.addEventListener('dragover', dragOver, false);
+        dropZone.addEventListener('dragover', dragover, false);
         dropZone.addEventListener('drop', drop, false);
       };
 
       var iam = 'Taro';
       var host = location.origin.replace(/^http/, 'ws');
       var context = window.location.pathname.substring(0, window.location.pathname.indexOf('/', 2));
+      var url = host + context + '/ChatBlob/' + iam;
       //      var url = ws://example.com/hoge;
-      var url = host + context + '/Chat/' + iam;
       var ws = new WebSocket(url);
 
       ws.onmessage = function (message) {
         var tag = document.createElement('p');
-        if (message.data.match(/(data:image)/)) {
-          var msgs = message.data.split(/(：)/);
-          tag.appendChild(document.createTextNode(msgs[0] + msgs[1]));
-          tag.appendChild(document.createElement("br"));
-          var img = new Image();
-          img.src = msgs[2];
-          tag.appendChild(img);
-        } else {
+        if (typeof message.data === "string") {
           tag.appendChild(document.createTextNode(message.data));
+        } else {
+          var image = new Image();
+          image.src = URL.createObjectURL(message.data);
+          tag.appendChild(image);
         }
         document.getElementById('logs').appendChild(tag);
       };
 
       function talk() {
-        var msg = document.getElementById('msg').value;
-        if (msg) {
-          if (msg.match(/.*：.*/)) {
-            alert('：が入る文字列は送信できません');
-          } else {
-            ws.send(msg);
-            document.getElementById('msg').value = '';
-          }
-        }
+        ws.send(document.getElementById('msg').value);
+        document.getElementById('msg').value = '';
       }
 
-      function drop(event) {
-        event.stopPropagation();
-        event.preventDefault();
-        var files = event.dataTransfer.files;
+      function drop(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        var files = evt.dataTransfer.files;
         for (var i = 0, f; f = files[i]; i++) {
           if (f.type.match(/(jpe*g|png)$/i)) {
-            var fr = new FileReader();
-            fr.onload = function (evt) {
-              var message = evt.target.result;
-              ws.send(message);
-            };
-            fr.readAsDataURL(f);
+            ws.send(f);
           } else {
             alert('画像ファイル（jpg, png）のみ送信できます');
           }
         }
       }
 
-      function dragOver(evt) {
+      function dragover(evt) {
         evt.stopPropagation();
         evt.preventDefault();
         evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
@@ -93,8 +78,7 @@
     <div id="logs"></div>
     <div>
       <input id="msg" type="text" placeholder="メッセージ" />
-      <button type="submit" value="talk" onClick="talk()">話す</button>
-    </div>
+      <button type="button" onClick="talk()">話す</button></div>
     <div id="drop_zone">スタンプ</div>
   </body>
 </html>

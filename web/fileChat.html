@@ -69,7 +69,7 @@
         event.preventDefault();
         var files = event.dataTransfer.files;
         for (var i = 0, f; f = files[i]; i++) {
-          if (f.type.match(/(jpe*g|png)$/i)) {
+          if (f.type.match(/(jpe*g|png|gif)$/i)) {
             var fr = new FileReader();
             fr.onload = function (evt) {
               var message = evt.target.result;

@@ -77,7 +77,7 @@
             };
             fr.readAsDataURL(f);
           } else {
-            alert('画像ファイル（jpg, png）のみ送信できます');
+            alert('画像ファイル（jpg, png, gif）のみ送信できます');
           }
         }
       }
@@ -85,7 +85,7 @@
       function dragOver(evt) {
         evt.stopPropagation();
         evt.preventDefault();
-        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        evt.dataTransfer.dropEffect = 'copy';
       }
     </script>
   </head>
